@@ -42,7 +42,7 @@ class Handle
       } elseif (is_numeric($test)) {
         $status = (int) $test;
       } else {
-        $response = (string) $test;
+        $response = (string) ($test ?: $output);
       }
 
       return array($status, $headers, $response);
