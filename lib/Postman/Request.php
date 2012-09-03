@@ -14,9 +14,9 @@ class Request
       foreach ($_SERVER as $key => $val) {
         if (substr($key, 0, 5) === 'HTTP_') {
           $key = strtolower(substr($key, 5));
-          $key = camelcase($key, TRUE, '-');
+          $key = ucwords(strtr($key, '_', ' '));
 
-          static::$headers[$key] = $val;
+          static::$headers[$key] = strtr($val, ' ', '-');
         }
       }
     }
