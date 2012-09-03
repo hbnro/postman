@@ -8,6 +8,11 @@ class Block
   private $sections = array();
 
 
+  public function __invoke($section, array $params = array())
+  {
+    return $this->yield($section, $params);
+  }
+
   public function __toString()
   {
     return join('', $this->all());
