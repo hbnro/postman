@@ -38,6 +38,9 @@ echo "\n\nBlocks:\n";
 
 $view = new Postman\Block;
 
+$view->title = 'Untitled';
+$view->title .= ' | Section?';
+
 $view->section('body', function () {
   echo json_encode(func_get_args());
 });
@@ -46,4 +49,10 @@ $view->prepend('body', 'xD');
 
 var_dump($view->all());
 
+echo "\nTitle: ";
+echo $view('title');
+
+echo "\nBody: ";
 echo $view('body');
+
+echo "\n";
