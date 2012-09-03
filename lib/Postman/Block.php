@@ -8,6 +8,11 @@ class Block
   private $sections = array();
 
 
+  public function __toString()
+  {
+    return join('', $this->all());
+  }
+
   public function clear($name)
   {
     if (isset($this->sections[$name])) {
