@@ -125,22 +125,22 @@ class Request
 
   public static function is_post()
   {
-    return static::method() === POST;
+    return static::method() === 'POST';
   }
 
   public static function is_get()
   {
-    return static::method() === GET;
+    return static::method() === 'GET';
   }
 
   public static function is_put()
   {
-    return static::method() === PUT;
+    return static::method() === 'PUT';
   }
 
   public static function is_delete()
   {
-    return static::method() === DELETE;
+    return static::method() === 'DELETE';
   }
 
   public static function is_upload($key = NULL)
