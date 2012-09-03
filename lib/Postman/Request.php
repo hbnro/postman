@@ -25,7 +25,7 @@ class Request
 
   public static function header($name, $default = FALSE)
   {
-    if ($set = static::all_headers()) {
+    if ($set = static::headers()) {
       return ! empty($set[$name]) ? $set[$name] : $default;
     }
     return $default;
