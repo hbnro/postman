@@ -8,6 +8,17 @@ class Block
   private $sections = array();
 
 
+
+  public function __get($key)
+  {
+    return $this->yield($key);
+  }
+
+  public function __set($key, $value)
+  {
+    $this->section($key, $value);
+  }
+
   public function __invoke($section, array $params = array())
   {
     return $this->yield($section, $params);
