@@ -8,8 +8,6 @@ class Handle
   private $klass = NULL;
   private $methods = array();
 
-  // TODO: populate object!
-
 
   function __construct($obj)
   {
