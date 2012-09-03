@@ -5,7 +5,6 @@ namespace Postman;
 class Block
 {
 
-  private $name = '';
   private $sections = array();
 
 
