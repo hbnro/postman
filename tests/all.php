@@ -46,4 +46,4 @@ $view->prepend('body', 'xD');
 
 var_dump($view->all());
 
-echo $view;
+echo $view('body');
