@@ -75,11 +75,15 @@ class Response
     $test = strtoupper(substr(PHP_SAPI, 0, 3));
 
     if ($test <> 'CLI') {
-      if ($test === 'CGI') {
-        header("Status: $this->status {$this->reasons[$this->status]}", TRUE);
+      if (isset($this->reasons[$this->status])) {
+        if ($test === 'CGI') {
+          header("Status: $this->status {$this->reasons[$this->status]}", TRUE);
+        } else {
+          $protocol = Request::env('SERVER_PROTOCOL');
+          header("$protocol $this->status {$this->reasons[$this->status]}", TRUE, $this->status);
+        }
       } else {
-        $protocol = Request::env('SERVER_PROTOCOL');
-        header("$protocol $this->status {$this->reasons[$this->status]}", TRUE, $this->status);
+        // TODO: raise exception
       }
 
       foreach ((array) $this->headers as $key => $val) {
