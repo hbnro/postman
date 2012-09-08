@@ -72,11 +72,11 @@ class Response
 
   public function __toString()
   {
-    $test = strtoupper(substr(PHP_SAPI, 0, 3));
+    $test = strtoupper(PHP_SAPI);
 
-    if ($test <> 'CLI') {
+    if ((strpos($test, 'CLI') === FALSE) OR ($test === 'CLI-SERVER')) {
       if (isset($this->reasons[$this->status])) {
-        if ($test === 'CGI') {
+        if (strpos($test, 'CGI') !== FALSE) {
           header("Status: $this->status {$this->reasons[$this->status]}", TRUE);
         } else {
           $protocol = Request::env('SERVER_PROTOCOL');
