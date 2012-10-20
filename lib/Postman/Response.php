@@ -65,9 +65,11 @@ class Response
 
 
 
-  public function __construct($output)
+  public function __construct(array $output = array())
   {
-    @list($this->status, $this->headers, $this->response) = $output;
+    if ($output) {
+      @list($this->status, $this->headers, $this->response) = $output;
+    }
   }
 
   public function __toString()
@@ -92,6 +94,41 @@ class Response
     }
 
     return $this->response;
+  }
+
+
+  public function redirect($to = '/', $status = 302, array $params = array())
+  {
+    if (is_array($to)) {
+      $params = array_merge($to, $params);
+    } elseif ( ! isset($params['to'])) {
+      $params['to'] = $to;
+    }
+
+    if (is_array($status)) {
+      $params = array_merge($status, $params);
+    } elseif ( ! isset($params['status'])) {
+      $params['status'] = (int) $status;
+    }
+
+
+    $params = array_merge(array(
+      'headers' => array(),
+      'locals'  => array(),
+      'status'  => 302,
+      'to'      => '/',
+    ), $params);
+
+
+    if ($params['locals']) {
+      $params['to'] .= strrpos($params['to'], '?') !== FALSE ? '&' : '?';
+      $params['to'] .= http_build_query($params['locals'], NULL, '&');
+    }
+
+
+    $this->status = (int) $params['status'];
+    $this->headers = (array) $params['headers'];
+    $this->headers['Location'] = str_replace('&amp;', '&', $params['to']);
   }
 
 }
