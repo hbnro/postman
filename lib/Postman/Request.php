@@ -123,6 +123,11 @@ class Request
     return static::env('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest';
   }
 
+  public static function is_patch()
+  {
+    return static::method() === 'PATCH';
+  }
+
   public static function is_post()
   {
     return static::method() === 'POST';
