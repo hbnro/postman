@@ -7,7 +7,7 @@ class Response
 
   public $status = 200;
   public $headers = array();
-  public $response = '';
+  public $response = NULL;
 
   private $reasons = array(
             100 => 'Continue',
@@ -65,10 +65,14 @@ class Response
 
 
 
-  public function __construct(array $output = array())
+  public function __construct($status = 200, array $headers = array(), $output = '')
   {
-    if ($output) {
-      @list($this->status, $this->headers, $this->response) = $output;
+    if (is_array($status)) {
+      @list($this->status, $this->headers, $this->response) = $status;
+    } else {
+      $this->status = (int) $status;
+      $this->headers = $headers;
+      $this->response = $output;
     }
   }
 
@@ -93,7 +97,7 @@ class Response
       }
     }
 
-    return $this->response;
+    return (string) $this->response;
   }
 
 
@@ -126,9 +130,11 @@ class Response
     }
 
 
-    $this->status = (int) $params['status'];
-    $this->headers = (array) $params['headers'];
-    $this->headers['Location'] = str_replace('&amp;', '&', $params['to']);
+    $params['headers']['Location'] = str_replace('&amp;', '&', $params['to']);
+
+    $output = array((int) $params['status'], (array) $params['headers'], $this->response);
+
+    return $output;
   }
 
 }

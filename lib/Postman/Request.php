@@ -31,24 +31,23 @@ class Request
     return $default;
   }
 
-  public static function host($path = '/', $complete = TRUE)
+  public static function host($path = '')
   {
-    $host = '';
-
-    if ($complete === TRUE) {
-      $test  = explode('/', static::env('SERVER_PROTOCOL'));
+    if ($test = static::env('SERVER_PROTOCOL')) {
+      $test  = explode('/', $test);
       $port  = static::env('SERVER_PORT');
 
-      $host .= strtolower(array_shift($test));
+      $host  = strtolower(array_shift($test));
       $host .= static::is_secure() ? 's' : '';
 
-      $host .= '://' . static::env('SERVER_NAME');
-      $host .= $port <> 80 ? ":$port" : '';
-    } else {
-      $host .= (string) $complete;
-    }
 
-    return "$host$path";
+      @list($name) = explode(':', static::env('HTTP_HOST', static::env('SERVER_NAME')));
+
+      $host .= "://$name";
+      $host .= in_array((int) $port, array(80, 443)) ? '' : ":$port";
+
+      return "$host$path";
+    }
   }
 
   public static function env($key, $default = FALSE)
@@ -68,7 +67,7 @@ class Request
 
   public static function value($key, $default = FALSE)
   {
-    return Helpers::fetch($_POST, $key, Helpers::fetch($_GET, $key, $default));
+    return static::fetch($_POST, $key, static::fetch($_GET, $key, $default));
   }
 
   public static function address()
@@ -155,7 +154,7 @@ class Request
     }
 
 
-    $test = Helpers::fetch($_FILES, $key);
+    $test = static::fetch($_FILES, $key);
 
     if ( ! empty($test['name'][0]) && $test['error'][0] == 0) {
       return TRUE;
@@ -178,6 +177,15 @@ class Request
       return TRUE;
     }
     return FALSE;
+  }
+
+
+  private static function fetch(array $test, $key, $default = FALSE)
+  {
+    $key = strtr($key, array('[' => '.', ']' => ''));
+    $set = join("']['", explode('.', $key));
+
+    return @eval("return isset(\$test['$set']) ? \$test['$set'] : \$default;");
   }
 
 }

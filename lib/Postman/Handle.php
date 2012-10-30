@@ -28,7 +28,6 @@ class Handle
 
       return call_user_func($lambda, $data, $params);
     }
-    // TODO: raise exception
   }
 
   public function register($type, \Closure $lambda, array $params = array())
@@ -44,6 +43,8 @@ class Handle
 
   public function execute($method, array $arguments = array())
   {
+    $klass = get_class($this->klass);
+
     if (in_array($method, $this->methods)) {
       ob_start();
 
@@ -52,32 +53,34 @@ class Handle
       $test = call_user_func_array($callback, $arguments);
       $output = ob_get_clean();
 
-      if ($tmp = $this->responds($this->type, $test, compact('arguments'))) {
-        @list($status, $headers, $response) = $tmp;
-      } else {
-        $status = 200;
-        $headers = array();
-        $response = $output;
+      // $output always become an string!
+      $response = $output;
+      $headers = array();
+      $status = 200;
 
-        if (is_array($test)) {
-          if (is_string(key($test))) {
-            $headers = $test;
-          } else {
-            $status = array_shift($test) ?: $status;
-            $headers = array_shift($test) ?: $headers;
-            $response = array_shift($test) ?: $response;
-          }
-        } elseif (is_numeric($test)) {
-          $status = (int) $test;
+      if (is_array($test)) {
+        if (is_string(key($test))) {
+          $headers = $test;
         } else {
-          $response = (string) ($test ?: $output);
+          $status = array_shift($test) ?: $status;
+          $headers = array_shift($test) ?: $headers;
+          $response = array_shift($test) ?: $response;
         }
+      } elseif (is_numeric($test)) {
+        $status = (int) $test;
+      } else {
+        $response = $output ?: $test;
       }
 
       return array($status, $headers, $response);
     } else {
-      // TODO: raise exception
+      throw new \Exception("Unknown '$klass::$method' handler");
     }
+  }
+
+  public function exists($method)
+  {
+    return in_array($method, $this->methods);
   }
 
 }
