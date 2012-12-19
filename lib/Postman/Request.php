@@ -36,6 +36,7 @@ class Request
     if ($test = static::env('SERVER_PROTOCOL')) {
       $test  = explode('/', $test);
       $port  = static::env('SERVER_PORT');
+      $name  = static::env('HTTP_HOST', static::env('SERVER_NAME'));
 
       $host  = strtolower(array_shift($test));
       $host .= static::is_secure() ? 's' : '';
