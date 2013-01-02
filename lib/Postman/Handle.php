@@ -20,11 +20,11 @@ class Handle
 
 
 
-  public function responds($to, $data, array $params = array())
+  public function responds($data, array $params = array())
   {
-    if ( ! empty($this->callbacks[$to])) {
-      $lambda = $this->callbacks[$to]['lambda'];
-      $params = $this->callbacks[$to]['params'] + $params;
+    if ( ! empty($this->callbacks[$this->type])) {
+      $lambda = $this->callbacks[$this->type]['lambda'];
+      $params = $this->callbacks[$this->type]['params'] + $params;
 
       return call_user_func($lambda, $data, $params);
     }
@@ -58,16 +58,17 @@ class Handle
       $headers = array();
       $status = 200;
 
-      if (is_array($test)) {
-        if (is_string(key($test))) {
-          $headers = $test;
+
+      if (is_numeric($test)) {
+        $status = (int) $test;
+      } elseif (is_array($test)) {
+        if ( ! is_numeric(key($test))) {
+          $response = $test;
         } else {
           $status = array_shift($test) ?: $status;
           $headers = array_shift($test) ?: $headers;
           $response = array_shift($test) ?: $response;
         }
-      } elseif (is_numeric($test)) {
-        $status = (int) $test;
       } else {
         $response = $output ?: $test;
       }
