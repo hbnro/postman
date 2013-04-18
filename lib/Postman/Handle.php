@@ -10,15 +10,12 @@ class Handle
   private $methods = array();
   private $callbacks = array();
 
-
-  function __construct($bundle, $type = '')
+  public function __construct($bundle, $type = '')
   {
     $this->type = $type;
     $this->klass = $bundle;
     $this->methods = get_class_methods($bundle);
   }
-
-
 
   public function responds($data, array $params = array())
   {
@@ -57,7 +54,6 @@ class Handle
       $response = $output;
       $headers = array();
       $status = 200;
-
 
       if (is_numeric($test)) {
         $status = (int) $test;

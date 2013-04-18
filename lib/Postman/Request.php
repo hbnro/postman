@@ -5,12 +5,13 @@ namespace Postman;
 class Request
 {
 
-  private static $headers = array();
+  private static $local_regex = '/^(::|127\.|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|localhost)/';
 
+  private static $headers = array();
 
   public static function headers()
   {
-    if ( ! static::$headers) {
+    if (! static::$headers) {
       foreach ($_SERVER as $key => $val) {
         if (substr($key, 0, 5) === 'HTTP_') {
           $key = strtolower(substr($key, 5));
@@ -20,6 +21,7 @@ class Request
         }
       }
     }
+
     return static::$headers;
   }
 
@@ -28,6 +30,7 @@ class Request
     if ($set = static::headers()) {
       return ! empty($set[$name]) ? $set[$name] : $default;
     }
+
     return $default;
   }
 
@@ -39,7 +42,6 @@ class Request
 
       $host  = strtolower(array_shift($test));
       $host .= static::is_secure() ? 's' : '';
-
 
       @list($name) = explode(':', static::env('HTTP_HOST', static::env('SERVER_NAME')));
 
@@ -62,6 +64,7 @@ class Request
     if (static::header('Content-Type') === 'application/x-www-form-urlencoded') {
       parse_str($out, $out);
     }
+
     return $out;
   }
 
@@ -102,8 +105,6 @@ class Request
 
   public static function is_local($test = NULL)
   {
-    static $regex = '/^(::|127\.|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|localhost)/';
-
     if (strpos($test, '://') !== FALSE) {
       $host = static::env('HTTP_HOST');
       $test = parse_url($test);
@@ -111,10 +112,11 @@ class Request
       if (isset($test['host']) && ($test['host'] !== $host)) {
         return FALSE;
       }
+
       return TRUE;
     }
 
-    return preg_match($regex, $test ?: static::env('REMOTE_ADDR')) > 0;
+    return preg_match(static::$local_regex, $test ?: static::env('REMOTE_ADDR')) > 0;
   }
 
   public static function is_xhr()
@@ -153,7 +155,6 @@ class Request
       return sizeof($_FILES) > 0;
     }
 
-
     $test = static::fetch($_FILES, $key);
 
     if ( ! empty($test['name'][0]) && $test['error'][0] == 0) {
@@ -176,9 +177,9 @@ class Request
     } elseif (static::port() == 443) {
       return TRUE;
     }
+
     return FALSE;
   }
-
 
   private static function fetch(array $test, $key, $default = FALSE)
   {

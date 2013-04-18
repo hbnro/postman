@@ -63,8 +63,6 @@ class Response
             510 => 'Not Extended',
           );
 
-
-
   public function __construct($status = 200, array $headers = array(), $output = '')
   {
     if (is_array($status)) {
@@ -100,7 +98,6 @@ class Response
     return (string) $this->response;
   }
 
-
   public function redirect($to = '/', $status = 302, array $params = array())
   {
     if (is_array($to)) {
@@ -115,7 +112,6 @@ class Response
       $params['status'] = (int) $status;
     }
 
-
     $params = array_merge(array(
       'headers' => array(),
       'locals'  => array(),
@@ -123,12 +119,10 @@ class Response
       'to'      => '/',
     ), $params);
 
-
     if ($params['locals']) {
       $params['to'] .= strrpos($params['to'], '?') !== FALSE ? '&' : '?';
       $params['to'] .= http_build_query($params['locals'], NULL, '&');
     }
-
 
     $params['headers']['Location'] = str_replace('&amp;', '&', $params['to']);
 
